@@ -1,19 +1,17 @@
-import logo from './logo.svg';
 import './css/App.css';
-import Header from './components/header/Header';
-import Welcome from './components/welcome/Welcome';
-import Footer from './components/footer/Footer';
+import Router from './Router';
 
 function App() {
   return (
-    <div>
-      <Header />
-      <main>
-        <div className="container">
-          <Welcome /*user="John"*/ />
-        </div>
-      </main> 
-      <Footer />
+    <div className='main'>
+        <main>
+            <div className="container">
+              <Router />
+            </div>
+        </main> 
+        <footer className="Footer">
+          <p>&copy; 2023 Sisterra</p>
+        </footer>
     </div> 
   );
 }

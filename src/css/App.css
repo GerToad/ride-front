@@ -34,6 +34,10 @@ body {
   margin: 0;
 }
 
+.main{
+    width: 100%;
+}
+
 header {
   background-color: var(--color-light);
   color: var(--color-dark);
@@ -69,6 +73,23 @@ button:hover {
   padding: 0 var(--space-md);
 }
 
+.Footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: var(--color-mid);
+  color: var(--color-light);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5vh;
+}
+
+.Footer p {
+  margin: 0;
+  font-size: 0.8rem;
+}
 @media (max-width: 768px) {
   /* styles for screens smaller than 768px */
   header {
