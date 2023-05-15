@@ -32,12 +32,12 @@ nav ul li:last-child {
   margin-right: 0;
 }
 
-nav a {
+h1 a, nav a {
   color: var(--color-light);
   text-decoration: none;
 }
 
-nav a:hover {
+h1 a:hover, nav a:hover{
   color: var(--color-brand);
 }
 

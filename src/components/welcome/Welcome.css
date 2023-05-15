@@ -1,17 +1,14 @@
-.welcome {
+.welcome .greeting{
   background-color: var(--color-light);
   color: var(--color-dark);
   padding: 1rem;
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   border: 2px solid var(--color-mid);
   border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 50vh;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 .welcome p {
   margin: 0;
 }
@@ -30,3 +27,63 @@
   text-decoration: underline;
 }
 
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.table thead {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-lightgray);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--color-lightgray);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-gray);
+}
+
+.table td button {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.table td button:hover {
+  background-color: var(--color-darkprimary);
+}
+
+.chat-button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.chat-reply {
+  margin-top: 1rem;
+  background-color: var(--color-light);
+  color: var(--color-dark);
+  border: 2px solid var(--color-mid);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chat-reply p {
+  margin: 0;
+}
