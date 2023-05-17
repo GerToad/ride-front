@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import './AddItem.css';
 
@@ -9,16 +10,38 @@ const AddItem = () => {
   const [status, setStatus] = useState('');
   const [ok, setOk] = useState('');
   const user = JSON.parse(localStorage.getItem("user"));
+  const [itemId, setItemId] = useState(useParams().itemId); 
+  const navigate = useNavigate();
+
+    useEffect(() => {
+      const fetchItemData = async () => {
+        if (itemId) {
+          try {
+            const response = await axios.get(`http://localhost:5000/item/getItem?id=${itemId}`, {
+              headers: { "Content-Type": "application/json" },
+            });
+
+            if (response.data.status === "success") {
+              const item = response.data.item;
+              setName(item.name);
+              setDescription(item.description);
+              setCost(item.cost);
+              setStatus(item.status);
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      };
+
+      fetchItemData();
+    }, [itemId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Perform the necessary actions to save the item data
     // For simplicity, we'll just log the values here
     try {
-        console.log('Name:', name);
-        console.log('Description:', description);
-        console.log('Cost:', cost);
-        console.log('Status:', status);
       const response = await axios.post("http://localhost:5000/item/add", 
                 { name, description, cost, status, "userId": user._id},
                 {headers: { "content-type": "application/json" }});
@@ -45,15 +68,50 @@ const AddItem = () => {
 
   };
 
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    // Perform the necessary actions to save the item data
+    // For simplicity, we'll just log the values here
+    try {
+      const response = await axios.patch("http://localhost:5000/item/edit", 
+                { name, description, cost, status, "_id": itemId},
+                {headers: { "content-type": "application/json" }});
+
+        if (response.data.status === "success") {
+          console.log("Item updated successfully");
+          // Display a success message or perform any other desired actions
+          setOk("success");
+        } else {
+          console.log("Item update failed");
+          // Display a fail message or perform any other desired actions
+          setOk("fail");
+        } 
+
+        setTimeout(() => {
+          // Code to be executed after 4 seconds
+          setItemId(null)
+          navigate("/");
+        }, 4000);
+    } catch (error) {
+      // Handle error, such as displaying an error message
+      console.error(error);
+      setOk("fail");
+    }
+
+  };
   const isFormValid = name && cost && status;
 
   return (
     <div className="add-item-container">
-      <h2>Añadir Item</h2>
+        {itemId === undefined ? <h2>Añadir Articulo</h2> : <h2>Cambiar Articulo</h2>}        
         {ok === "success" && (
-          <div className="success-message">
-            Item añadido exitosamente!
-          </div>
+            itemId === undefined ? 
+                <div className="success-message">
+                Articulo añadido exitosamente!
+                </div> : 
+                <div className="success-message">
+                Articulo actualizado exitosamente!
+                </div> 
         )}
         {ok === "fail" && (
           <div className="fail-message">
@@ -102,7 +160,11 @@ const AddItem = () => {
           </select >
         </div>        
 
-        <button type="submit"  disabled={!isFormValid} onClick={handleSubmit}>Añadir</button>
+        {itemId === undefined ? 
+            <button type="submit"  disabled={!isFormValid} onClick={handleSubmit}>Añadir</button> : 
+            <button type="submit"  disabled={!isFormValid} onClick={handleUpdate}>Actualizar</button>
+        }        
+        
       </form>
     </div>
   );

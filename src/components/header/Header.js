@@ -28,8 +28,14 @@ function Header() {
             </div>      
         ) : (
             <div>
+                <button className="add-tiem">
+                   <NavLink to="/routes">Nueva ruta</NavLink>
+                </button> 
+                <button className="add-tiem">
+                   <NavLink to="/addItem">Nuevo articulo </NavLink>
+                </button> 
                 <button className="logout-button" onClick={handleLogout}>
-                   Cerrar sesión 
+                   ⏻ 
                 </button> 
             </div>
         )}

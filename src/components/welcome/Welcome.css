@@ -7,6 +7,7 @@
   border: 2px solid var(--color-mid);
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
 .welcome p {
@@ -39,31 +40,26 @@
   color: var(--color-white);
 }
 
-.table th,
-.table td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid var(--color-lightgray);
-}
-
 .table tbody tr:nth-child(even) {
   background-color: var(--color-lightgray);
 }
 
 .table tbody tr:hover {
-  background-color: var(--color-gray);
+  background-color: var(--color-light);
 }
 
-.table td button {
+.table td {
   background-color: var(--color-primary);
   color: var(--color-white);
   border: none;
   padding: 4px 8px;
   cursor: pointer;
+  text-align: center;
+  border-bottom: 1px solid var(--color-lightgray);
 }
 
-.table td button:hover {
-  background-color: var(--color-darkprimary);
+.table a{
+  color: var(--color-white);
 }
 
 .chat-button {
@@ -86,4 +82,32 @@
 
 .chat-reply p {
   margin: 0;
+}
+
+.card-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.card {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 45%;
+  margin-bottom: 1rem;
+   /* Add box shadows */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  /* Adjust the box shadow on hover if desired */
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+} 
+
+.card a:hover{
+    text-decoration: none;
 }

@@ -5,7 +5,9 @@ import axios from 'axios';
 
 const Welcome = () => {
   const user = JSON.parse(localStorage.getItem('user'));
+  //const token = {"token": JSON.parse(localStorage.getItem('token'))};
   const [items, setItems] = useState([]);
+  const [routes, setRoutes] = useState([]);
   const [chatReply, setChatReply] = useState('');
 
   useEffect(() => {
@@ -13,14 +15,22 @@ const Welcome = () => {
 
     const fetchItems = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/item/getAll?id=${user._id}`);
+        const response = await axios.get(`http://localhost:5000/item/getAll?id=${user._id}`, {
+                    headers: { "Content-Type": "application/json"},
+            });
         setItems(response.data.items);
+
+        // routes
+        const routes = await axios.get(`http://localhost:5000/route/getAll?id=${user._id}`, {
+                    headers: { "Content-Type": "application/json"},
+            });
+        setRoutes(routes.data.routes);
       } catch (error) {
         console.error(error);
       }
     };
 
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       // Code to be executed after the delay
         if (user) {
           fetchItems();
@@ -29,8 +39,10 @@ const Welcome = () => {
   }, [user]);
 
     const sendMessage = async () => {
-      const itemList = items.map(item => `- ${item.name}\n  Description: ${item.description}\n  Cost: ${item.cost}\n  Status: ${item.status}`).join('\n\n');
-      const message = `Give me a recommendation for better management of my job as a route transportation manager. Here are the items I have:\n\n${itemList}\n\n and considering a mid of the prices in Mexico tell me if these costs are ok or not Please provide the recommendation in Spanish.`; 
+    const itemList = items.map(item => `- ${item.name}\n  Description: ${item.description}\n  Cost: ${item.cost}\n  Status: ${item.status}`).join('\n\n');
+    const routeList = routes.map(route => `- ${route.name}\n  Description: ${route.description}\n  Driver: ${route.driver}\n  Issues: ${route.issues}`).join('\n\n');
+
+    const message = `Give me a recommendation for better management of my job as a route transportation manager. Here are the items I have:\n\n${itemList}\n\nAnd here are the routes:\n\n${routeList}\n\n and considering a mid of the prices in Mexico tell me if these costs are ok or not and last, for each issue i have on my routes tell me how can i handle them. Please provide the recommendation in Spanish.`;
       try {
         const request = {
             model: "gpt-3.5-turbo",
@@ -44,7 +56,7 @@ const Welcome = () => {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', request, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer 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'
+            'Authorization': 'Bearer ???'
           }
         });
 
@@ -73,7 +85,8 @@ const Welcome = () => {
       ) : (
         <div>
           <div className="greeting">
-            <h1>Bienvenido, {user.name}! Estos son los articulos que tienes</h1>
+            <h1>Bienvenido, {user.name}!</h1>
+            <h2>Estos son los articulos que tienes</h2>
           </div>
 
           <table className='table'>
@@ -88,7 +101,11 @@ const Welcome = () => {
             <tbody>
               {items.map((item) => (
                 <tr key={item._id}>
-                  <td>{item.name}</td>
+                  <td>
+                    <NavLink to={`/addItem/${item._id}`}>
+                    {item.name}
+                    </NavLink>
+                  </td>
                   <td>{item.description}</td>
                   <td>{item.cost}</td>
                   <td>{item.status}</td>
@@ -97,6 +114,21 @@ const Welcome = () => {
             </tbody>
           </table>
 
+            {/*##### Rutas #####*/}
+          <div className="greeting">
+            <h2>Y estas son tus rutas</h2>
+          </div>
+          <div className="card-container">
+            {/* Cards  */}
+            {routes.map((route) => (
+            <div className="card" key={route._id}>
+              <h2> <NavLink to={`/routes/${route._id}`}>{route.name}</NavLink> </h2>
+              <p>{route.description}</p>
+              <p>Conductor: {route.driver}</p>
+              <p>Problemas: {route.issues}</p>
+            </div>
+            ))}
+          </div>
           <button className="chat-button" onClick={sendMessage}>Recomiendame algo</button>
           {chatReply && (
             <div className="chat-reply">

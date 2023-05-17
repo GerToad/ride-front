@@ -21,7 +21,9 @@ class Router extends Component {
           <Route path="/register" element={<Register/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/routes" element={<RouteForm/>}/>
+          <Route path="/routes/:routeId" element={<RouteForm/>}/>
           <Route path="/addItem" element={<AddItem/>}/>
+          <Route path="/addItem/:itemId" element={<AddItem/>}/>
           <Route path="*" element={<Welcome/>}/>
         </Routes>
       </BrowserRouter>
