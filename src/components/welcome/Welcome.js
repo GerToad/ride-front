@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import Chart from 'chart.js/auto';
 import './Welcome.css';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
@@ -9,9 +10,10 @@ const Welcome = () => {
   const [items, setItems] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [chatReply, setChatReply] = useState('');
+  const [currentView, setCurrentView] = useState('statistics'); // 'statistics' or 'table'
 
   useEffect(() => {
-    const delay = 5000; // 60,000 milliseconds = 1 minute
+    const delay = 4000; // 60,000 milliseconds = 1 minute
 
     const fetchItems = async () => {
       try {
@@ -39,10 +41,9 @@ const Welcome = () => {
   }, [user]);
 
     const sendMessage = async () => {
-    const itemList = items.map(item => `- ${item.name}\n  Description: ${item.description}\n  Cost: ${item.cost}\n  Status: ${item.status}`).join('\n\n');
-    const routeList = routes.map(route => `- ${route.name}\n  Description: ${route.description}\n  Driver: ${route.driver}\n  Issues: ${route.issues}`).join('\n\n');
-
-    const message = `Give me a recommendation for better management of my job as a route transportation manager. Here are the items I have:\n\n${itemList}\n\nAnd here are the routes:\n\n${routeList}\n\n and considering a mid of the prices in Mexico tell me if these costs are ok or not and last, for each issue i have on my routes tell me how can i handle them. Please provide the recommendation in Spanish.`;
+        const itemList = items.map(item => `- ${item.name}\n  Description: ${item.description}\n  Cost: ${item.cost}\n  Status: ${item.status}\n Useful life: ${item.usefulLife}\n Purchase year: ${item.purchaseYear}`).join('\n\n');
+        const routeList = routes.map(route => `- ${route.name}\n  Description: ${route.description}\n  Driver: ${route.driver}\n  Issues: ${route.issues}`).join('\n\n');
+        const message = `Give me a recommendation for better management of my job as a route transportation manager. Here are the items I have:\n\n${itemList}\n\nAnd here are the routes:\n\n${routeList}\n\n and considering a mid of the prices in Mexico tell me if these costs are ok or not and last, for each issue i have on my routes tell me how can i handle them. Please provide the recommendation in Spanish.`;
       try {
         const request = {
             model: "gpt-3.5-turbo",
@@ -72,6 +73,128 @@ const Welcome = () => {
       }
     };
 
+    const handleViewSwitch = () => {
+        setCurrentView(currentView === 'statistics' ? 'table' : 'statistics');
+    };
+
+    // Calculate depreciation for each item
+    const depreciatedItems = items.map(item => {
+      const annualDepreciation = item.cost / item.usefulLife;
+      const currentYear = new Date().getFullYear();
+      const yearsElapsed = currentYear - item.purchaseYear;
+      const accumulatedDepreciation = annualDepreciation * yearsElapsed;
+      const netBookValue = item.cost - accumulatedDepreciation;
+
+      return {
+        name: item.name,
+        cost: item.cost,
+        usefulLife: item.usefulLife,
+        purchaseYear: item.purchaseYear,
+        annualDepreciation,
+        yearsElapsed,
+        accumulatedDepreciation,
+        netBookValue,
+      };
+    });
+
+    const StatisticsView = ({ depreciatedItems }) => {
+      const chartRef = useRef(null);
+
+        const chartData = useMemo(() => {
+        const labels = depreciatedItems.map(item => item.name);
+        const netBookValues = depreciatedItems.map(item => item.netBookValue);
+
+        return {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Depreciación',
+              data: netBookValues,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            },
+          ],
+        };
+        }, [depreciatedItems]);
+
+        useEffect(() => {
+        if (!chartRef.current) {
+          return;
+        }
+
+        const ctx = chartRef.current.getContext('2d');
+        let chartInstance;
+
+        if (Chart.getChart(chartRef.current)) {
+          chartInstance = Chart.getChart(chartRef.current);
+          chartInstance.data = chartData;
+          chartInstance.update();
+        } else {
+          chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+        }
+
+        return () => {
+          if (chartInstance) {
+            chartInstance.destroy();
+          }
+        };
+        }, [chartData]);
+
+        if (depreciatedItems.length === 0) {
+        return <p>No items available for statistics.</p>;
+        }
+
+        return (
+        <div>
+          <h2>Estadisticas</h2>
+          <canvas ref={chartRef} />
+        </div>
+        )
+    };
+
+    const TableView = ({ depreciatedItems }) => {
+      // Implement the JSX to display the table view using the depreciatedItems data
+    return (
+        <div>
+          <h2>Tabla de Depreciación</h2>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Costo</th>
+                <th>Depreciación Anual</th>
+                <th>Años Transcurridos</th>
+                <th>Depreciación Acumulada</th>
+                <th>Depreciación Actual</th>
+              </tr>
+            </thead>
+            <tbody>
+              {depreciatedItems.map((item) => (
+                <tr key={item.name}>
+                  <td>{item.name}</td>
+                  <td>{item.cost}</td>
+                  <td>{item.annualDepreciation}</td>
+                  <td>{item.yearsElapsed}</td>
+                  <td>{item.accumulatedDepreciation}</td>
+                  <td>{item.netBookValue}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    };
+    // Main code
   return (
     <div className='welcome'>
       {!user ? (
@@ -96,6 +219,8 @@ const Welcome = () => {
                 <th>Descripción</th>
                 <th>Costo</th>
                 <th>Estado</th>
+                <th>Vida util</th>
+                <th>Año de compra</th>
               </tr>
             </thead>
             <tbody>
@@ -107,8 +232,10 @@ const Welcome = () => {
                     </NavLink>
                   </td>
                   <td>{item.description}</td>
-                  <td>{item.cost}</td>
+                  <td>${item.cost}</td>
                   <td>{item.status}</td>
+                  <td>{item.usefulLife}</td>
+                  <td>{item.purchaseYear}</td>
                 </tr>
               ))}
             </tbody>
@@ -136,6 +263,13 @@ const Welcome = () => {
               <p>{chatReply}</p>
             </div>
           )}
+
+          <button onClick={handleViewSwitch}>Cambiar vista</button>
+            {currentView === 'statistics' ? (
+                <StatisticsView depreciatedItems={depreciatedItems} />
+            ) : (
+                <TableView depreciatedItems={depreciatedItems} />
+            )}
         </div>
       )}
     </div>

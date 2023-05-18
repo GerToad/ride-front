@@ -8,10 +8,14 @@ const AddItem = () => {
   const [description, setDescription] = useState('');
   const [cost, setCost] = useState('');
   const [status, setStatus] = useState('');
+  const [usefulLife, setUsefulLife] = useState(0);
+  const [purchaseYear, setPurchaseYear] = useState(0);
   const [ok, setOk] = useState('');
   const user = JSON.parse(localStorage.getItem("user"));
   const [itemId, setItemId] = useState(useParams().itemId); 
   const navigate = useNavigate();
+
+
 
     useEffect(() => {
       const fetchItemData = async () => {
@@ -27,6 +31,8 @@ const AddItem = () => {
               setDescription(item.description);
               setCost(item.cost);
               setStatus(item.status);
+              setUsefulLife(item.usefulLife);
+              setPurchaseYear(item.purchaseYear)
             }
           } catch (error) {
             console.error(error);
@@ -43,7 +49,7 @@ const AddItem = () => {
     // For simplicity, we'll just log the values here
     try {
       const response = await axios.post("http://localhost:5000/item/add", 
-                { name, description, cost, status, "userId": user._id},
+                { name, description, cost, status, usefulLife, purchaseYear, "userId": user._id},
                 {headers: { "content-type": "application/json" }});
 
         if (response.data.status === "success") {
@@ -60,6 +66,8 @@ const AddItem = () => {
         setName('');
         setDescription('');
         setCost('');
+        setUsefulLife(0);
+        setPurchaseYear(0);
     } catch (error) {
       // Handle error, such as displaying an error message
       console.error(error);
@@ -74,7 +82,7 @@ const AddItem = () => {
     // For simplicity, we'll just log the values here
     try {
       const response = await axios.patch("http://localhost:5000/item/edit", 
-                { name, description, cost, status, "_id": itemId},
+                { name, description, cost, status, usefulLife, purchaseYear, "_id": itemId},
                 {headers: { "content-type": "application/json" }});
 
         if (response.data.status === "success") {
@@ -99,7 +107,8 @@ const AddItem = () => {
     }
 
   };
-  const isFormValid = name && cost && status;
+    const isFormValid = name && cost && status && usefulLife && purchaseYear;
+    //const isFormValid = true;
 
   return (
     <div className="add-item-container">
@@ -118,7 +127,7 @@ const AddItem = () => {
             Adision del item fallo. Por favor intente nuevamente
           </div>
         )}
-      <form onSubmit={handleSubmit}>
+      <form>
         <div className="form-group">
           <label htmlFor="name">Nombre</label>
           <input
@@ -154,11 +163,33 @@ const AddItem = () => {
         <div className="form-group">
           <label htmlFor="status">Estado</label>
           <select id="status" name="status" required onChange={(e) => setStatus(e.target.value)}>
-            <option value="new">Nuevo</option>
-            <option value="old">Viejo</option>
-            <option value="used">Usado</option>
+            <option value="nuevo">Nuevo</option>
+            <option value="viejo">Viejo</option>
+            <option value="usado">Usado</option>
           </select >
         </div>        
+        <div className="form-group">
+          <label htmlFor="usefulLife">Vida útil (en años)</label>
+          <input
+            required
+            type="number"
+            id="usefulLife"
+            name="usefulLife"
+            value={usefulLife}
+            onChange={(e) => setUsefulLife(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="purchaseYear">Año de compra</label>
+          <input
+            required
+            type="number"
+            id="purchaseYear"
+            name="purchaseYear"
+            value={purchaseYear}
+            onChange={(e) => setPurchaseYear(e.target.value)}
+          />
+        </div>
 
         {itemId === undefined ? 
             <button type="submit"  disabled={!isFormValid} onClick={handleSubmit}>Añadir</button> : 

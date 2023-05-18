@@ -9,9 +9,9 @@ function App() {
               <Router />
             </div>
         </main> 
-        <footer className="Footer">
+        {/*<footer className="Footer">
           <p>&copy; 2023 Sisterra</p>
-        </footer>
+        </footer>*/}
     </div> 
   );
 }

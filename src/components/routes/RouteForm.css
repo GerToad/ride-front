@@ -27,6 +27,7 @@ label {
   color: var(--color-dark);
 }
 
+input[type="number"],
 input[type="text"],
 textarea {
   border: none;
