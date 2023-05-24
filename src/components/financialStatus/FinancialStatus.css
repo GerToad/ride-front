@@ -1,0 +1,31 @@
+.table-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  text-align: center;
+}
+
+.table-container > div {
+  width: 100%;
+}
+
+.last-row {
+  border-top: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.last-row:hover {
+  border-color: #aaa;
+}
+
+.last-row > td{
+    font-weight: bold;
+}
+
+.good-profit{
+    color: green !important;
+}
+
+.bad-profit{
+    color: red !important;
+}

@@ -29,6 +29,9 @@ function Header() {
         ) : (
             <div>
                 <button className="add-tiem">
+                   <NavLink to="/status">Estado Financiero</NavLink>
+                </button> 
+                <button className="add-tiem">
                    <NavLink to="/routes">Nueva ruta</NavLink>
                 </button> 
                 <button className="add-tiem">

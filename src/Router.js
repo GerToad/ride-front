@@ -7,6 +7,7 @@ import Login from './components/login/Login';
 import Welcome from './components/welcome/Welcome';
 import RouteForm from './components/routes/RouteForm';
 import AddItem from './components/item/AddItem';
+import FinancialStatus from './components/financialStatus/FinancialStatus';
 
 class Router extends Component {
 
@@ -24,6 +25,7 @@ class Router extends Component {
           <Route path="/routes/:routeId" element={<RouteForm/>}/>
           <Route path="/addItem" element={<AddItem/>}/>
           <Route path="/addItem/:itemId" element={<AddItem/>}/>
+          <Route path="/status" element={<FinancialStatus/>}/>
           <Route path="*" element={<Welcome/>}/>
         </Routes>
       </BrowserRouter>
